@@ -7,6 +7,7 @@
   ((sprite-data :initform (asset 'shipwreck-farm 'farmer))
    (transform :initform (transform (vec3) (vec3 1)))
    (direction :initform (nvunit (vec3 -1 -1 0)) :accessor direction)
+   (movement-speed :initform 80 :accessor movement-speed)
    (current-action :initform :idle :reader current-action)))
 
 (defmethod (setf current-action) ((action symbol) (farmer farmer))
@@ -46,9 +47,9 @@
 
 (define-handler (farmer tick :before) (dt)
   (handle-input farmer)
-  (when (and (eql (current-action farmer) :walk))
-    (let* ((speed 80)
+  (when (eql (current-action farmer) :walk)
+    (let* ((speed (movement-speed farmer))
            (movement (directional 'move))
-           (delta (nvunit (vec3 (vx movement) (vy movement) 0))))
+           (direction (nv* (nvabs (nvunit (vec3 (vxy movement) 0))) (vxyz movement))))
       ;; TODO: Multiply movement input with some easing function to make it non-linear.
-      (nv+ (location farmer) (nv* delta speed dt)))))
+      (nv+ (location farmer) (nv* direction speed dt)))))
