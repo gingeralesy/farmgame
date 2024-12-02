@@ -47,10 +47,8 @@
 (define-handler (farmer tick :before) (dt)
   (handle-input farmer)
   (when (and (eql (current-action farmer) :walk))
-    (let* ((speed 60)
+    (let* ((speed 80)
            (movement (directional 'move))
-           (total (vlength movement))
-           (dx (if (/= total 0) (/ (vx movement) total) 0))
-           (dy (if (/= total 0) (/ (vy movement) total) 0)))
+           (delta (nvunit (vec3 (vx movement) (vy movement) 0))))
       ;; TODO: Multiply movement input with some easing function to make it non-linear.
-      (nv+ (location farmer) (vec3 (* dx speed dt) (* dy speed dt) 0)))))
+      (nv+ (location farmer) (nv* delta speed dt)))))
